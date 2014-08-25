@@ -1,42 +1,34 @@
-
-angular.module('ProductService', []).factory('Products', ['$http', function($http) {
-
-
-
+angular.module('ProductService', []).factory('Products', ['$http',
+    function($http) {
         return {
-            getAll: function(callback) { 
+            getAll: function(callback) {
                 $http({
                     method: 'get',
                     url: '/api/products'
-                }).success(function(data) { 
+                }).success(function(data) {
                     //console.log(data);
                     callback(data);
                 }).error(function() {
                     alert("error");
-                }); 
+                });
             },
-
-            getOne : function(id, callback) { 
+            getOne: function(id, callback) {
                 $http({
                     method: 'get',
-                    url: '/api/products/'+id
-                }).success(function(data) { 
+                    url: '/api/products/' + id
+                }).success(function(data) {
                     //console.log(data);
                     callback(data);
                 }).error(function() {
                     alert("error");
-                });  
+                });
             }
-            
-//            ,
-//
-//            create : function(productData) {
-//                    return $http.post('/api/products', productData);
-//            },
-//
-//            delete : function(id) {
-//                    return $http.delete('/api/products/' + id);
-//            } 
-	};
-	
-}]);
+           /*,create: function(productData) {
+                return $http.post('/api/products', productData);
+            },
+            delete: function(id) {
+                return $http.delete('/api/products/' + id);
+            }*/
+        };
+    }
+]);
