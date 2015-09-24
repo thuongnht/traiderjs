@@ -7,21 +7,25 @@ exports.getById = function(id, callback) {
         throw "Call to db method must include callback function"
     }
     var mongoclient = mongoHandler.getDbClient();
-    // Open the connection to the server
-    mongoclient.open(function(err, mongoclient) {
-        var dbName = mongoHandler.dbName();
-        var db = mongoclient.db(dbName);
+    var dbHost = mongoHandler.dbHost();
+    var dbName = mongoHandler.dbName();
+    var uri = "mongodb://" + dbHost + "/" + dbName;
+
+    mongoclient.connect(uri, function(err, db) {
+        if(err) throw err;
+        
         var mongoId;
+        console.log("id:" + id);
         try {
             mongoId = mongoHandler.makeObjectID(id);
         } catch (e) {
             return callback(e);
         }
         console.log("id:" + mongoId);
+
         db.collection(collectionName).findOne({
             "_id": mongoId
         }, function(err, result) {
-            mongoclient.close();
             if (err) {
                 callback(err);
                 return;
@@ -30,7 +34,9 @@ exports.getById = function(id, callback) {
                 return callback(null, result);
             }
         });
+
     });
+
 };
 
 exports.getAll = function(callback) {
@@ -38,62 +44,50 @@ exports.getAll = function(callback) {
         throw "Call to db method must include callback function"
     }
     var mongoclient = mongoHandler.getDbClient();
-    mongoclient.open(function(err, mongoclient) {
-
-        if (err) {
-            mongoclient.close();
-            throw err.Message;
-            return;
-        }
-
-        var dbName = mongoHandler.dbName();
-        var db = mongoclient.db(dbName);
-        console.log(dbName + "." + collectionName);
+    var dbHost = mongoHandler.dbHost();
+    var dbName = mongoHandler.dbName();
+    var uri = "mongodb://" + dbHost + "/" + dbName;
+console.log(uri);
+    mongoclient.connect(uri, function(err, db) {
+        if(err) throw err;
 
         db.collection(collectionName).find({}, function(err, result) {
             if (err) {
-                mongoclient.close();
                 throw err.Message;
                 return;
             } else {
                 result.toArray(function(err, resultArray) {
-                    // Close the connection
-                    mongoclient.close();
-
                     console.log("Got data: " + resultArray.length + " records.");
                     return callback(resultArray);
-
                 });
             }
         });
+
     });
+
 };
 
 
 exports.insert = function(data, callback) {
     var mongoclient = mongoHandler.getDbClient();
-    mongoclient.open(function(err, mongoclient) {
+    var dbHost = mongoHandler.dbHost();
+    var dbName = mongoHandler.dbName();
+    var uri = "mongodb://" + dbHost + "/" + dbName;
 
-        if (err) {
-            mongoclient.close();
-            throw err.Message;
-            return;
-        }
+    console.log(uri);
 
-        var dbName = mongoHandler.dbName();
-        var db = mongoclient.db(dbName);
-        console.log(dbName + "." + collectionName);
+    mongoclient.connect(uri, function(err, db) {
+        if(err) throw err;
 
         db.collection(collectionName).insert(data, function(err, result) {
             if (err) {
-
-                mongoclient.close();
                 throw err.Message;
                 return;
             } else if (callback === null && typeof(callback) !== "function") {
-                mongoclient.close();
                 return callback(result);
             }
         });
+
     });
+
 };

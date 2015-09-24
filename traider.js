@@ -3,10 +3,12 @@ var express = require('express'),
     expressSession = require('express-session');
 
 var routes = require('./routes/routes.js');
-var MongoStore = require('connect-mongo')({
-    session: expressSession
-});
-
+var MongoStore = require('connect-mongo')(expressSession);
+var dbConfig = {
+ "db": "traider",
+ "host": "localhost",
+ "port": 27017
+};
 
 createServer = function createServer() {
 
@@ -20,9 +22,7 @@ createServer = function createServer() {
     server.use(cookieParser());
     server.use(expressSession({
         secret: 'mdfkldfgkl&*(sas/d,asldsjf()*)(mlksdmfNfjSDsdfYUHNn',
-        store: new MongoStore({
-            db: 'traiderioSessions'
-        })
+        store: new MongoStore(dbConfig)
     }));
 
 
